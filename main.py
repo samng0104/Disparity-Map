@@ -6,14 +6,14 @@ Global Variables
 """
 width = 640
 height = 480
-art_left_image = cv2.imread('.\\Stereo_Image\\Art\\view1.png', cv2.IMREAD_COLOR)
-art_right_image = cv2.imread('.\\Stereo_Image\\Art\\view5.png', cv2.IMREAD_COLOR)
+art_left_image = cv2.imread('./Stereo_Images/Art/view1.png', cv2.IMREAD_COLOR)
+art_right_image = cv2.imread('./Stereo_Images/Art/view5.png', cv2.IMREAD_COLOR)
 
-dolls_left_image = cv2.imread('.\\Stereo_Image\\Dolls\\view1.png', cv2.IMREAD_COLOR)
-dolls_right_image = cv2.imread('.\\Stereo_Image\\Dolls\\view5.png', cv2.IMREAD_COLOR)
+dolls_left_image = cv2.imread('./Stereo_Images/Dolls/view1.png', cv2.IMREAD_COLOR)
+dolls_right_image = cv2.imread('./Stereo_Images/Dolls/view5.png', cv2.IMREAD_COLOR)
 
-reindeer_left_image = cv2.imread('.\\Stereo_Image\\Reindeer\\view1.png', cv2.IMREAD_COLOR)
-reindeer_rightt_image= cv2.imread('.\\Stereo_Image\\Reindeer\\view1.png', cv2.IMREAD_COLOR)
+reindeer_left_image = cv2.imread('./Stereo_Images/Reindeer/view1.png', cv2.IMREAD_COLOR)
+reindeer_rightt_image= cv2.imread('./Stereo_Images/Reindeer/view1.png', cv2.IMREAD_COLOR)
 
 
 def display_image(left_image, right_image):
@@ -30,6 +30,11 @@ def display_image(left_image, right_image):
     # Wait for a key event and then close all windows
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+def detect(left_image):
+    sift = cv2.xfeatures2d.SIFT_create()
+    kp, des = sift.detectAndCompute(left_image, None)
+    return kp, des
 
 def convert_grayscale(left_image, right_image):
     left_image_gray = cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY)
@@ -58,5 +63,6 @@ def compute_disparity(left_image, right_image, ground_truth_disp_map):
     psnr = 10 * np.log10((max_val ** 2) / mse)
 
 if __name__ == '__main__':
-    display_image()
+    kp_left, des_left = detect(art_left_image)
+
     
