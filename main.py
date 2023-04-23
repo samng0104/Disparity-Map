@@ -1,9 +1,18 @@
+"""
+Two rectified images
+Write own program to infer depth
+Define own matching criteria
+locate the corresponding position of the match point
+Based on this pos. and original pos.
+Calculate the disparity and use disparity to infer the depth
+Compare to the ground truth
+"""
 import cv2
 import numpy as np
 
-"""
-Global Variables
-"""
+
+# Global Variables
+
 width = 640
 height = 480
 art_left_image = cv2.imread('./Stereo_Images/Art/view1.png', cv2.IMREAD_COLOR)
