@@ -7,52 +7,59 @@ Based on this pos. and original pos.
 Calculate the disparity and use disparity to infer the depth
 Compare to the ground truth
 """
+import math
 import cv2
 import numpy as np
 
-
-# Global Variables
-
-width = 640
-height = 480
-art_left_image = cv2.imread(r'./Stereo_Images/Art/view1.png', cv2.IMREAD_COLOR)
-art_right_image = cv2.imread(r'./Stereo_Images/Art/view5.png', cv2.IMREAD_COLOR)
-
-dolls_left_image = cv2.imread(r'./Stereo_Images/Dolls/view1.png', cv2.IMREAD_COLOR)
-dolls_right_image = cv2.imread(r'./Stereo_Images/Dolls/view5.png', cv2.IMREAD_COLOR)
-
-reindeer_left_image = cv2.imread(r'./Stereo_Images/Reindeer/view1.png', cv2.IMREAD_COLOR)
-reindeer_rightt_image= cv2.imread(r'./Stereo_Images/Reindeer/view1.png', cv2.IMREAD_COLOR)
-
-
-def display_image(left_image, right_image, ground_truth):
+def display_image(left_image, right_image):
 
     if left_image is None or right_image is None:
         print('Failed to load the images')
         exit(1)
 
-    # Display the left and right images
     cv2.imshow('Left Image', left_image)
     cv2.imshow('Right Image', right_image)
 
-    # Wait for a key event and then close all windows
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def compute_disparity(left_image, right_image, ground_truth_disp_map):
+def convert_grayscale(left_image, right_image, ground_truth):
+    return cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(ground_truth, cv2.COLOR_BGR2GRAY)
+
+def compute_disparity(left_image, right_image):
+    window_size = 3
+    min_disp = 0
+    max_disp = 16
+
     # Create a StereoBM object
-    stereo_bm = cv2.StereoBM_create(numDisparities=16, blockSize=15)
-
+    stereo = cv2.StereoSGBM_create(minDisparity=min_disp,
+                                numDisparities=max_disp,
+                                blockSize=window_size,
+                                P1=8*3*window_size**2,
+                                P2=32*3*window_size**2,
+                                disp12MaxDiff=1,
+                                uniquenessRatio=10,
+                                speckleWindowSize=100,
+                                speckleRange=32)
     # Compute the disparity map
-    disparity_map = stereo_bm.compute(left_image, right_image)
-
-    # Calculate the Peak Signal-to-Noise Ratio (PSNR)
-    max_val = np.max(ground_truth)
-    psnr = 10 * np.log10((max_val ** 2) / mse)
+    disparity_map = stereo.compute(left_image, right_image)
+    disparity_map = cv2.normalize(disparity_map, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    return disparity_map
 
 if __name__ == '__main__':
-    # Check if the images are loaded successfully
-    # display_image(art_left_image, art_right_image)
-    kp_left, des_left = detect(art_left_image)
-
     
+    Stereo_Images = ["Art", "Dolls", "Reindeer"]
+    for i in range(3):
+
+        left_image_name = r'./Stereo_Images/' + Stereo_Images[i] + r'/view1.png'
+        right_iamge_name = r'./Stereo_Images/' + Stereo_Images[i] + r'/view5.png'
+
+        left_image = cv2.imread(left_image_name, cv2.IMREAD_COLOR)
+        right_image = cv2.imread(right_iamge_name, cv2.IMREAD_COLOR)
+
+        # Check if the images are loaded successfully
+        # display_image(left_image, right_image)
+
+        reconstructed_result = compute_disparity(left_image, right_image)
+        disp_name = r'./pred/' + Stereo_Images[i] + r'/disp1.png'
+        cv2.imwrite(disp_name, reconstructed_result)
