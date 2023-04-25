@@ -17,7 +17,7 @@ def test():
         gt_img = numpy.array(Image.open(gt_names),dtype=float);
        
         
-        pred_names =  "./pred/"+test_imgs[index]+"/disp1.png";
+        pred_names = "./pred/"+test_imgs[index]+"/disp1.png";
         pred_img = numpy.array(Image.open(pred_names),dtype=float);
         
 # When calculate the PSNR:
