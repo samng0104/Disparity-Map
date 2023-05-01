@@ -7,7 +7,6 @@ Based on this pos. and original pos.
 Calculate the disparity and use disparity to infer the depth
 Compare to the ground truth
 """
-import math
 import cv2
 import numpy as np
 
@@ -23,8 +22,8 @@ def display_image(left_image, right_image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def convert_grayscale(left_image, right_image, ground_truth):
-    return cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(ground_truth, cv2.COLOR_BGR2GRAY)
+def convert_grayscale(left_image, right_image):
+    return cv2.cvtColor(left_image, cv2.COLOR_BGR2GRAY), cv2.cvtColor(right_image, cv2.COLOR_BGR2GRAY)
 
 def compute_disparity(left_image, right_image):
     window_size = 3
@@ -59,6 +58,8 @@ if __name__ == '__main__':
 
         # Check if the images are loaded successfully
         # display_image(left_image, right_image)
+
+        # convert_grayscale(left_image, right_image)
 
         reconstructed_result = compute_disparity(left_image, right_image)
         disp_name = r'./pred/' + Stereo_Images[i] + r'/disp1.png'
